@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>API Details</title>
+<style>
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+html {
+	height: calc(100% - 16px);
+}
+
+body {
+	font-family: 'Open Sans', serif;
+	height: calc(100% - 50px);
+}
+
+.header {
+	width: 100%;
+	height: 50px;
+	/*background-color: #53b5aa;*/
+	background-color: #313131;
+	border-bottom: 1px solid #dacfcf;
+}
+
+.container {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
+.menu-section {
+	width: 20%;
+	/* min-height: 100%; */
+	overflow-y: auto;
+}
+
+.content-section {
+	width: 80%;
+	background-color: #ffffff;
+	/* min-height: 100%; */
+	overflow-y: auto;
+}
+
+h3.api {
+	padding-right: 10px;
+}
+
+ul.menu-items {
+	list-style-type: none;
+	padding: 0px;
+	background-color: #e6e2e2;
+	margin: 0px;
+}
+
+ul.menu-items li.list-item {
+	padding: 10px 10px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+ul.menu-items li:hover {
+	background-color: #cccdce;
+}
+
+ul.menu-items li.active {
+	background-color: #cccdce;
+}
+
+ul.menu-items li {
+	border-bottom: 1px solid #dacfcf;
+}
+
+.content-section-body {
+	/* visibility: hidden; */
+	display: none;
+	/* position: absolute; */
+}
+
+.description-of-service {
+	/*border: 1px solid #dacfcf;*/
+	border: 1px solid #dacfcf;
+	margin: 20px 0px 0px 20px;
+	padding: 10px;
+	font-size: 14px;
+	background-color: #f1f0f0;
+}
+
+.method-content-type-url-table {
+	border: 1px solid #dacfcf;
+	margin: 20px 0px 0px 20px;
+	display: flex;
+	flex-direction: column;
+}
+
+.method-content-type-url-table-content {
+	border-bottom: 1px solid #dacfcf;
+	margin: 0px;
+	display: flex;
+	flex-direction: row;
+}
+
+.method-content-type-url-table-content:last-child {
+	border-bottom: 0px;
+}
+
+.method.table-header, .method.body {
+	width: 20%;
+}
+
+.method.table-header {
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	background-color: lightgrey;
+}
+
+.method.body {
+	font-size: 14px;
+	text-align: center;
+}
+
+.content-type.table-header, .content-type.body {
+	width: 30%;
+	border-left: 1px solid #dacfcf;
+	border-right: 1px solid #dacfcf;
+}
+
+.content-type.table-header {
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	background-color: lightgrey;
+}
+
+.content-type.body {
+	font-size: 14px;
+	text-align: center;
+}
+
+.url.table-header, .url.body {
+	width: 50%;
+}
+
+.url.table-header {
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	background-color: lightgrey;
+}
+
+.url.body {
+	font-size: 14px;
+	text-align: center;
+}
+
+.request-object {
+	border: 1px solid #dacfcf;
+	margin: 20px 0px 20px 20px;
+}
+
+.request-object-header {
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	background-color: lightgrey;
+}
+
+.request-object-body {
+	border-top: 1px solid #dacfcf;
+	font-size: 14px;
+	background-color: #f1f1f1;
+	min-height: 30px;
+}
+
+.validation-details {
+	text-align: center;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.validation-details-body {
+	display: flex;
+	flex-direction: row;
+}
+
+.validation-details-left-table {
+	border: 1px solid #dacfcf;
+	margin: 20px 10px 20px 20px;
+	width: 50%;
+}
+
+.validation-details-right-table {
+	border: 1px solid #dacfcf;
+	margin: 20px 0px 20px 0px;
+	width: 50%;
+}
+
+.validation-details-table-header {
+	border-bottom: 1px solid #dacfcf;
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	background-color: lightgrey;
+	display: flex;
+	flex-direction: row;
+}
+
+.validation-details-table-body {
+	border-bottom: 1px solid #dacfcf;
+	font-size: 14px;
+	display: flex;
+	flex-direction: row;
+}
+
+.validation-details-table-body:last-child {
+	border-bottom: 0px solid #000000;
+}
+
+.field.validation-details-body-table-header, .field.validation-details-body-table-body
+	{
+	width: 40%;
+	border-right: 1px solid #dacfcf;
+}
+
+.header-align {
+	font-size: 30px;
+	margin-left: 1%;
+	color: #ffffff;
+}
+</style>
+</head>
+<body>
+	<div class="header">
+		<span class="header-align">JB API</span>
+
+	</div>
+	<div class="container">
+		<div class="menu-section">
+			<ul class="menu-items">
+				<li class="list-item" onClick="showContent(login, this)">Login</li>
+				<li class="list-item" onClick="showContent(save_candidate_profile, this)">Save Candidate Profile</li>
+				<li class="list-item" onClick="showContent(build_candidate_resume, this)">Build Candidate Resume</li>
+				<li class="list-item" onClick="showContent(get_resume_details, this)">Get Resume Details</li>
+				<li class="list-item" onClick="showContent(download_resume, this)">Download Resume</li>
+			</ul>
+		</div>
+		<div class="content-section">
+			
+			<!-- ==================================== LOGIN  ====================================-->
+			<div class="content-section-body" id="login">
+				<div class="description-of-service">Description of the service: Login to the application.</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Method</div>
+						<div class="content-type table-header">Content Type</div>
+						<div class="url table-header">URL</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">POST</div>
+						<div class="content-type body">application/json</div>
+						<div class="url body">/api/user/login</div>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Request Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+		                    "userName": "username1",
+		                    "password": "password1"
+		                  }
+		                </pre>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Response Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+		                    "status": 200
+		                  }
+		                </pre>
+					</div>
+				</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Field</div>
+						<div class="content-type table-header">Is Mandatory</div>
+						<div class="url table-header">Max Length</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">userName</div>
+						<div class="content-type body">true</div>
+						<div class="url body">150</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">passowrd</div>
+						<div class="content-type body">true</div>
+						<div class="url body">30</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- ==================================== Save Candidate Profile  ====================================-->
+			<div class="content-section-body" id="save_candidate_profile">
+				<div class="description-of-service">This service is to save the candidate profile.</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Method</div>
+						<div class="content-type table-header">Content Type</div>
+						<div class="url table-header">URL</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">POST</div>
+						<div class="content-type body">application/json</div>
+						<div class="url body">/api/resume/save/profile/candidate</div>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Request Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+					"email": "jayaprakash.manne@gmail.com",
+					"name": "Jaya Prakash",
+					"lastName": "Manne",
+					"phoneNumber": "9000143256",
+					"city": "Hyderabad",
+					"state": "Telangana",
+					"pinCode": "500085",
+					"country": "India",
+					"headLine": "Senior Software Engieneer",
+					"objective": "To be a good Software Professional",
+					"relocate" : "1"
+				}
+		                </pre>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Response Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+				    "message": "Candidate Profile saved successfully",
+				    "responsePayload": {
+				        "message": null,
+				        "userDetailsId": 2,
+				        "fistName": "Jaya Prakash",
+				        "lastName": "Manne",
+				        "middleName": null,
+				        "roleId": 2,
+				        "authCode": "bEm5gZu8aHd61580881811474"
+				    }
+				}
+		                </pre>
+					</div>
+				</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Field</div>
+						<div class="content-type table-header">Is Mandatory</div>
+						<div class="url table-header">Max Length</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">name</div>
+						<div class="content-type body">true</div>
+						<div class="url body">150</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">lastName</div>
+						<div class="content-type body">true</div>
+						<div class="url body">150</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- ==================================== Build Candidate Resume  ====================================-->
+			<div class="content-section-body" id="build_candidate_resume">
+				<div class="description-of-service">This service is to build the candidate resume.</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Method</div>
+						<div class="content-type table-header">Content Type</div>
+						<div class="url table-header">URL</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">POST</div>
+						<div class="content-type body">application/json</div>
+						<div class="url body">/api/resume/build/candidate</div>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Request Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+						"workExperiences" : [{
+								"jobTitle": "Software Engineer",
+								"company": "Aqua SS",
+								"city": "Hyderabad",
+								"timePeriodFrom": "Jan 2017",
+								"timePeriodTo": "Dec 2019",
+								"description": "This is the description of the workexperience"
+						}],
+						"educations" : [{
+								"degree": "Degree Bsc",
+								"collegeOrUniversity": "Andhra University",
+								"fieldOfStudy": "Computer Science",
+								"city": "Visakhapatnam",
+								"timePeriodFrom": "Jan 2014",
+								"timePeriodTo": "Mar 2016"
+						}],
+						"skills" : [{
+								"skill": "Java",
+								"experience": "4 Years 3 Months"
+						}],
+						"awardsOrAchievements" : [{
+								"title": "Best Employee",
+								"dateAwarded": "Jan 2018",
+								"description": "Received the best employee award for the month of Jan 2018"
+						}],
+						"certificationsAndLincenses" : [{
+								"title": "SCJP Certification",
+								"description": "Oracle certified Java Professional certification",
+								"timePeriodFrom": "Jan 2018",
+								"timePeriodTo": "Jan 2018"
+						}],
+						"nonProfitStudentOrganizations" : [{
+								"title": "ASWA Organization",
+								"description": "ASWA Organization",
+								"timePeriodFrom": "Jan 2018",
+								"timePeriodTo": "Jan 2018"
+						}],
+						"projectsOrPapersPresented" : [{
+								"title": "Project A",
+								"url": "http://www.projecta.com",
+								"description": "This is Project A description",
+								"additionalInformation": "This is additional information for the Project A",
+								"datePublished": "Mar 2018"
+						}],
+						"onlineProfileDetails" : {
+								"linkAddress": "http://www.myprofile.com"
+						},
+						"militaryServiceDetails" : {
+								"serviceCountry": "India",
+								"branch": "Jammu",
+								"rank": "ABCD Rank",
+								"commendations": "Having multiple commendments",
+								"timePeriodFrom": "Jan 2015",
+								"timePeriodTo": "Mar 2016",
+								"description": "This is the description of the military service description"
+						}
+					}
+		                </pre>
+					</div>
+				</div>
+
+				<div class="request-object">
+					<div class="request-object-header">Response Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+						    "message": "Candidate Resume build successfully",
+						    "responsePayload": null
+						}
+		                </pre>
+					</div>
+				</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Field</div>
+						<div class="content-type table-header">Is Mandatory</div>
+						<div class="url table-header">Max Length</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">name</div>
+						<div class="content-type body">true</div>
+						<div class="url body">150</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">lastName</div>
+						<div class="content-type body">true</div>
+						<div class="url body">150</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ==================================== Get Candidate Resume  Details ====================================-->
+			<div class="content-section-body" id="get_resume_details">
+				<div class="description-of-service">This service is to getd the candidate resume details.</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Method</div>
+						<div class="content-type table-header">Content Type</div>
+						<div class="url table-header">URL</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">GET</div>
+						<div class="content-type body">application/json</div>
+						<div class="url body">/api/resume/get/details</div>
+					</div>
+				</div>
+				<div class="validation-details-body">
+	              <div class="validation-details-left-table">
+	                <div class="validation-details-table-header">
+	                  <div class="field validation-details-body-table-header">Request Parameter</div>
+	                  <div class="validation validation-details-body-table-header">Value</div>
+	                </div>              
+	                <div class="validation-details-table-body">
+	                  <div class="field validation-details-body-table-body">authCode</div>
+	                  <div class="validation validation-details-body-table-body">bEm5gZu8aHd61580881811474</div>
+	                </div>
+	              </div>
+	            </div>
+
+				<div class="request-object">
+					<div class="request-object-header">Response Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  {
+						    "message": "Resume Details",
+						    "responsePayload": {
+						        "message": null,
+						        "authCode": "bEm5gZu8aHd61580881811474",
+						        "email": "jayaprakash.manne@gmail.com",
+						        "name": "Jaya Prakash",
+						        "lastName": "Manne",
+						        "headLine": "Senior Software Engieneer",
+						        "objective": "To be a good Software Professional",
+						        "city": "Hyderabad",
+						        "state": "Telangana",
+						        "pinCode": "500085",
+						        "country": "India",
+						        "phoneNumber": "9000143256",
+						        "relocate": "1",
+						        "resumeCode": "5f840a1547db11eaa0ee7157fd62c326",
+						        "workExperiences": [
+						            {
+						                "workExperienceDetailsId": 1,
+						                "jobTitle": "Software Engineer",
+						                "company": "Aqua SS",
+						                "city": "Hyderabad",
+						                "description": "This is the description of the workexperience",
+						                "timePeriodFrom": "Jan 2017",
+						                "timePeriodTo": "Dec 2019"
+						            }
+						        ],
+						        "educations": [
+						            {
+						                "educationDetailsId": 1,
+						                "degree": "Degree Bsc",
+						                "collegeOrUniversity": "Andhra University",
+						                "fieldOfStudy": "Computer Science",
+						                "city": "Visakhapatnam",
+						                "timePeriodFrom": "Jan 2014",
+						                "timePeriodTo": "Mar 2016"
+						            }
+						        ],
+						        "skills": [
+						            {
+						                "skillDetailsId": 1,
+						                "skill": "Java",
+						                "experience": "4 Years 3 Months"
+						            }
+						        ],
+						        "awardsOrAchievements": [
+						            {
+						                "awardsOrAchievementsDetailsId": 1,
+						                "title": "Best Employee",
+						                "dateAwarded": "Jan 2018",
+						                "description": "Received the best employee award for the month of Jan 2018"
+						            }
+						        ],
+						        "certificationsAndLincenses": [
+						            {
+						                "certificationsAndLicensesDetailsId": 1,
+						                "title": "SCJP Certification",
+						                "description": "Oracle certified Java Professional certification",
+						                "timePeriodFrom": "Jan 2018",
+						                "timePeriodTo": "Jan 2018"
+						            }
+						        ],
+						        "nonProfitStudentOrganizations": [
+						            {
+						                "nonProfitStudentOrganizationsDetailsId": 1,
+						                "title": "ASWA Organization",
+						                "description": "ASWA Organization",
+						                "timePeriodFrom": "Jan 2018",
+						                "timePeriodTo": "Jan 2018"
+						            }
+						        ],
+						        "projectsOrPapersPresented": [
+						            {
+						                "projectsOrPapersPresentedDetailsId": 1,
+						                "title": "Project A",
+						                "url": "http://www.projecta.com",
+						                "description": "This is Project A description",
+						                "additionalInformation": "This is additional information for the Project A",
+						                "datePublished": "Mar 2018"
+						            }
+						        ],
+						        "onlineProfileDetails": {
+						            "onlineProfileDetailsId": 1,
+						            "linkAddress": "http://www.myprofile.com"
+						        },
+						        "militaryServiceDetails": {
+						            "militaryServiceDetailsId": 1,
+						            "serviceCountry": "India",
+						            "branch": "Jammu",
+						            "rank": "ABCD Rank",
+						            "description": "This is the description of the military service description",
+						            "commendations": "Having multiple commendments",
+						            "timePeriodFrom": "Jan 2015",
+						            "timePeriodTo": "Mar 2016"
+						        }
+						    }
+						}
+		                </pre>
+					</div>
+				</div>
+			</div>
+			
+			<!-- ==================================== Download Resume  ====================================-->
+			<div class="content-section-body" id="download_resume">
+				<div class="description-of-service">This service is to download the candidate resume as pdf.</div>
+				<div class="method-content-type-url-table">
+					<div class="method-content-type-url-table-content">
+						<div class="method table-header">Method</div>
+						<div class="content-type table-header">Content Type</div>
+						<div class="url table-header">URL</div>
+					</div>
+					<div class="method-content-type-url-table-content">
+						<div class="method body">GET</div>
+						<div class="content-type body">application/json</div>
+						<div class="url body">/api/resume/download</div>
+					</div>
+				</div>
+				<div class="validation-details-body">
+	              <div class="validation-details-left-table">
+	                <div class="validation-details-table-header">
+	                  <div class="field validation-details-body-table-header">Request Parameter</div>
+	                  <div class="validation validation-details-body-table-header">Value</div>
+	                </div>              
+	                <div class="validation-details-table-body">
+	                  <div class="field validation-details-body-table-body">authCode</div>
+	                  <div class="validation validation-details-body-table-body">bEm5gZu8aHd61580881811474</div>
+	                </div>
+	              </div>
+	            </div>
+
+				<div class="request-object">
+					<div class="request-object-header">Response Object</div>
+					<div class="request-object-body">
+						<pre>
+		                  Candidate resume as pdf
+		                </pre>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<script>
+        function showContent(idValue, data) {
+          var elements = document.getElementsByClassName('content-section-body');
+          
+          for (var i=0; i<elements.length; i++) {
+            elements[i].style.display = 'none';
+          }
+          
+          var elements1 = document.getElementsByClassName('list-item');
+          for (var i=0; i<elements1.length; i++) {
+            elements1[i].classList.remove("active");
+          }
+          idValue.style.display = 'block';
+          data.classList.add("active");
+        }
+      </script>
+</body>
+</html>
