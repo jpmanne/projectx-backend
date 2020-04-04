@@ -28,7 +28,7 @@ public class ProjectXApplication  {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjectXApplication.class, args);
-		log.info("Start of the JBoradApplication............... ");
+		log.info("Start of the ProjectXApplication............... ");
 	}
 
 	// =========================================================================

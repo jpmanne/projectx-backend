@@ -72,17 +72,12 @@ public class LoginController extends BaseController {
 					authCodeDetails = authCodeRepository.save(authCodeDetails);
 					
 					long roleId = userDetails.getRoleDetails().getRoleId();
-					if(roleId == Constants.EMPLOYER_ROLE) {
-						// TODO: Need to have a new class to handle employer response with company name and other data
-						
-					} else {
-						loginResponse = new LoginResponse();
-						loginResponse.setAuthCode(authCodeDetails.getAuthCode());
-						loginResponse.setFistName(userDetails.getFirstName());
-						loginResponse.setLastName(userDetails.getLastName());
-						loginResponse.setUserDetailsId(userDetails.getUserDetailsId());
-						loginResponse.setRoleId(roleId);
-					}
+					loginResponse = new LoginResponse();
+					loginResponse.setAuthCode(authCodeDetails.getAuthCode());
+					loginResponse.setFistName(userDetails.getFirstName());
+					loginResponse.setLastName(userDetails.getLastName());
+					loginResponse.setUserDetailsId(userDetails.getUserDetailsId());
+					loginResponse.setRoleId(roleId);
 					message = "User Login Successful";
 				}
 			} else {

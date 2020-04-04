@@ -62,6 +62,10 @@ public class UserDetails {
 	@JoinColumn(name = "role_id")
 	private RoleDetails roleDetails;
 	
+	@OneToOne
+	@JoinColumn(name = "organization_details_id")
+	private OrganizationDetails organizationDetails;
+	
 	public Long getUserDetailsId() {
 		return userDetailsId;
 	}
@@ -132,6 +136,14 @@ public class UserDetails {
 
 	public void setRoleDetails(RoleDetails roleDetails) {
 		this.roleDetails = roleDetails;
+	}
+
+	public OrganizationDetails getOrganizationDetails() {
+		return organizationDetails;
+	}
+
+	public void setOrganizationDetails(OrganizationDetails organizationDetails) {
+		this.organizationDetails = organizationDetails;
 	}
 
 	public WebUserDetails getWebUser() {

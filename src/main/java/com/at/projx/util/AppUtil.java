@@ -1,11 +1,12 @@
 package com.at.projx.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.at.projx.dao.model.UserDetails;
 import com.at.projx.model.OptionDetails;
-
+import java.util.TimeZone;
 public class AppUtil {
 
 	//=========================================================================
@@ -50,4 +51,37 @@ public class AppUtil {
 	}
 	
 	//=========================================================================
+	
+	/*private static final String timeZone = "America/New_York";
+	
+	public static void main(String[] args) {
+		System.out.println(">>>>>>>>>>>> In the main method >>>>>>>>>.");
+		SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+		defaultDateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
+
+		java.util.Date now = new java.util.Date();
+		String requestTime = defaultDateFormat.format(now);
+		System.out.println(">>>>>>>>>>>>>requestTime1 : "+requestTime);
+		
+		//SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+		SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("yyyy.MM.dd");
+
+		defaultDateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
+		fileNameDateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
+		
+		System.out.println(">>>>>>>>>>>>>requestTime2 : "+requestTime);
+		System.out.println(">>>>>>>>>>>>>requestTime2 : "+requestTime);
+
+		//java.util.Date now = new java.util.Date();
+		requestTime = defaultDateFormat.format(now);
+		
+		System.out.println(">>>>>>>>>>>>>requestTime2 : "+requestTime);
+		System.out.println(">>>>>>>>>>>>>fileNameDateFormat : "+fileNameDateFormat.format(now));
+		String[] availableIDs = TimeZone.getAvailableIDs();
+		for (int i = 0; i < availableIDs.length; i++) {
+			System.out.println(availableIDs[i]); 
+		}
+		
+		
+	}*/
 }

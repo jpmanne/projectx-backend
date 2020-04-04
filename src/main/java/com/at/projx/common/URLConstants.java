@@ -29,6 +29,7 @@ public class URLConstants {
 	
 	public class Registration {
 		public static final String API_BASE = "/api/registration";
+		public static final String BASIC_SETUP = "/basic/setup";
 	}
 	
 	//=========================================================================

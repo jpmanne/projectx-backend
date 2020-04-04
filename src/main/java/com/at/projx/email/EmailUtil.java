@@ -167,11 +167,11 @@ public class EmailUtil {
 	
 	public EmailDetails populateCredenitalsMail(String firstName, String lastName, String email, String password) {
 		EmailDetails emailDetails = new EmailDetails();
-		emailDetails.setSubject("Job Board access credentials");
-		StringBuffer messageContentStringBuffer = new StringBuffer();
+		emailDetails.setSubject("ProjectX access credentials");
+		StringBuilder messageContentStringBuffer = new StringBuilder();
 		messageContentStringBuffer.append("Hi "+firstName + " " + lastName + ",");
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
-		messageContentStringBuffer.append("Below are the credentials to access your Job Board account.");
+		messageContentStringBuffer.append("Below are the credentials to access your ProjectX account.");
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
 		messageContentStringBuffer.append("Username : "+email);
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
@@ -180,7 +180,7 @@ public class EmailUtil {
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
 		messageContentStringBuffer.append("Thanks & Regards");
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
-		messageContentStringBuffer.append("Job Board");
+		messageContentStringBuffer.append("ProjectX Team");
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
 		messageContentStringBuffer.append(Constants.LINE_SEPERATOR);
 		messageContentStringBuffer.append("This is an auto generated email. Please do not reply to this email.");
