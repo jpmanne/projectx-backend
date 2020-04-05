@@ -34,4 +34,28 @@ public class URLConstants {
 	
 	//=========================================================================
 	
+	public class Department {
+		public static final String API_BASE = "/api/department";
+		public static final String GET_ALL_DEPARTMENTS = "/all";
+		public static final String GET_DEPARTMENT = "/{departmentDetailsId}";
+		public static final String ADD_DEPARTMENT = "/add";
+		public static final String UPDATE_DEPARTMENT = "/update";
+		public static final String IS_DEPARTMENT_EXISTS = "/exists";
+		public static final String DEACTIVATE_DEPARTMENT = "/deactivate/{departmentDetailsId}";
+		public static final String ACTIVATE_DEPARTMENT = "/activate/{departmentDetailsId}";
+	}
+	
+	public class Designation {
+		public static final String API_BASE = "/api/designation";
+		public static final String GET_ALL_DESIGNATIONS = "/all";
+		public static final String GET_DESIGNATION = "/{designationDetailsId}";
+		public static final String ADD_DESIGNATION = "/add";
+		public static final String UPDATE_DESIGNATION = "/update";
+		public static final String IS_DESIGNATION_EXISTS = "/exists";
+		public static final String DEACTIVATE_DESIGNATION = "/deactivate/{designationDetailsId}";
+		public static final String ACTIVATE_DESIGNATION = "/activate/{designationDetailsId}";
+	}
+	
+	//=========================================================================
+	
 }

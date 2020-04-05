@@ -1,7 +1,5 @@
 /**
 * @author  Jaya Prakash Manne
-* @version 1.0
-* @since   01-Nov-2019 
 */
 package com.at.projx.controller;
 
@@ -28,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.at.projx.common.URLConstants;
 import com.at.projx.dao.model.UserDetails;
-import com.at.projx.exception.JBoradException;
+import com.at.projx.exception.ProjectXException;
 import com.at.projx.model.AuthorizationDetails;
 import com.at.projx.model.Response;
 import com.at.projx.repository.UserRepository;
@@ -46,7 +44,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 
 	@GetMapping(URLConstants.User.IS_EMAIL_EXISTS)
-	public ResponseEntity<Response> isEmailExists(@RequestParam("email") String email) throws JBoradException {
+	public ResponseEntity<Response> isEmailExists(@RequestParam("email") String email) throws ProjectXException {
 		String logTag = "isEmailExists() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		Response response = null;
@@ -71,7 +69,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 	
 	@GetMapping(URLConstants.User.GET_ALL_USERS)
-	public ResponseEntity<Response> getAllUsers(@RequestParam("authCode") String authCode) throws JBoradException {
+	public ResponseEntity<Response> getAllUsers(@RequestParam("authCode") String authCode) throws ProjectXException {
 		String logTag = "getAllUsers() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		AuthorizationDetails authorizationDetails = null;
@@ -112,7 +110,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 	
 	@PostMapping(URLConstants.User.ADD_USER)
-	public ResponseEntity<Response> addUser(@Valid @RequestBody UserDetails userDetails, @RequestParam("authCode") String authCode) throws JBoradException {
+	public ResponseEntity<Response> addUser(@Valid @RequestBody UserDetails userDetails, @RequestParam("authCode") String authCode) throws ProjectXException {
 		String logTag = "addUser() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		AuthorizationDetails authorizationDetails = null;
@@ -123,11 +121,17 @@ public class UserController extends BaseController {
 			
 			if(authorizationDetails.isValidAuthCode()) {
 				if(authorizationDetails.isValidAccess()) {
-					UserDetails ud = userRepository.save(userDetails);
-					if(ud != null && ud.getUserDetailsId() != null) {
-						response = new Response("User Added Successfully", ud.getWebUser());
+					List<UserDetails> existingUsers = userRepository.getUserByEmail(userDetails.getEmail().toLowerCase());
+					
+					if(existingUsers != null && existingUsers.size() > 0) {
+						response = new Response("Email already exists.", null);
 					} else {
-						response = new Response("User Adding Failure", null);
+						UserDetails ud = userRepository.save(userDetails);
+						if(ud != null && ud.getUserDetailsId() != null) {
+							response = new Response("User Added Successfully", ud.getWebUser());
+						} else {
+							response = new Response("User Adding Failure", null);
+						}
 					}
 				} else {
 					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
@@ -148,7 +152,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 
 	@GetMapping(URLConstants.User.GET_USER)
-	public ResponseEntity<Response> getUserById(@PathVariable(value = "userDetailsId") Long userDetailsId, @RequestParam("authCode") String authCode) throws JBoradException {
+	public ResponseEntity<Response> getUserById(@PathVariable(value = "userDetailsId") Long userDetailsId, @RequestParam("authCode") String authCode) throws ProjectXException {
 		String logTag = "getUserById() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		AuthorizationDetails authorizationDetails = null;
@@ -186,7 +190,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 
 	@PutMapping(URLConstants.User.UPDATE_USER)
-	public ResponseEntity<Response> updateUser(@PathVariable(value = "userDetailsId") Long userDetailsId, @Valid @RequestBody UserDetails userDetails, @RequestParam("authCode") String authCode) throws JBoradException {
+	public ResponseEntity<Response> updateUser(@PathVariable(value = "userDetailsId") Long userDetailsId, @Valid @RequestBody UserDetails userDetails, @RequestParam("authCode") String authCode) throws ProjectXException {
 		String logTag = "updateUser() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		AuthorizationDetails authorizationDetails = null;
@@ -235,7 +239,7 @@ public class UserController extends BaseController {
 	//=========================================================================
 	
 	@DeleteMapping(URLConstants.User.DELETE_USER)
-	public ResponseEntity<Response> deleteUser(@PathVariable(value = "userDetailsId") Long userDetailsId, @RequestParam("authCode") String authCode) throws JBoradException {
+	public ResponseEntity<Response> deleteUser(@PathVariable(value = "userDetailsId") Long userDetailsId, @RequestParam("authCode") String authCode) throws ProjectXException {
 		String logTag = "getUserById() :";
 		LOGGER.info(AppUtil.getStartMethodMessage(logTag));
 		AuthorizationDetails authorizationDetails = null;

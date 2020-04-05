@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.at.projx.common.Constants;
 import com.at.projx.dao.model.AuthCodeDetails;
-import com.at.projx.exception.JBoradException;
+import com.at.projx.dao.model.OrganizationDetails;
+import com.at.projx.dao.model.UserDetails;
+import com.at.projx.exception.ProjectXException;
 import com.at.projx.model.AuthorizationDetails;
 import com.at.projx.model.Response;
 import com.at.projx.repository.AuthCodeRepository;
 import com.at.projx.repository.ExceptionRepository;
+import com.at.projx.repository.UserRepository;
 
 @RestController
 public abstract class BaseController {
@@ -30,6 +33,9 @@ public abstract class BaseController {
 	
 	@Autowired
 	ExceptionRepository exceptionRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
 	
@@ -76,9 +82,9 @@ public abstract class BaseController {
 	
 	//=========================================================================
 	
-	public void handleException(Logger LOGGER,  String logTag, String exceptionMessage, Throwable e, AuthorizationDetails authorizationDetails) throws JBoradException {
+	public void handleException(Logger LOGGER,  String logTag, String exceptionMessage, Throwable e, AuthorizationDetails authorizationDetails) throws ProjectXException {
 		LOGGER.error(logTag + exceptionMessage, e);  
-		throw new JBoradException(exceptionRepository, logTag, exceptionMessage, e, authorizationDetails);
+		throw new ProjectXException(exceptionRepository, logTag, exceptionMessage, e, authorizationDetails);
 	}
 	
 	//=========================================================================
@@ -97,6 +103,26 @@ public abstract class BaseController {
 	
 	public Response getInvalidInputRespose() {
 		return new Response("Invalid Input", null);
+	}
+	
+	//=========================================================================
+	
+	public Response getRespose(String message) {
+		return new Response(message, null);
+	}
+	
+	//=========================================================================
+	
+	public Long getOrganizationDetailsId(Long userDetailsId) {
+		UserDetails ud = userRepository.findByUserDetailsId(userDetailsId);
+		return ud.getOrganizationDetails().getOrganizationDetailsId();
+	}
+	
+	//=========================================================================
+	
+	public OrganizationDetails getOrganizationDetails(Long userDetailsId) {
+		UserDetails ud = userRepository.findByUserDetailsId(userDetailsId);
+		return ud.getOrganizationDetails();
 	}
 	
 	//=========================================================================

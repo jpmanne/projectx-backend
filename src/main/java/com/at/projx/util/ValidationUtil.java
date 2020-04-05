@@ -6,6 +6,8 @@
 package com.at.projx.util;
 
 import com.at.projx.common.Constants;
+import com.at.projx.dao.model.DepartmentDetails;
+import com.at.projx.dao.model.DesignationDetails;
 import com.at.projx.request.model.BasicSetupRequest;
 
 public class ValidationUtil {
@@ -49,6 +51,16 @@ public class ValidationUtil {
 	
 	// ========================================================================
 	
+	public String validateField(String fieldName, Long fieldValue) {
+		if(fieldValue != null && fieldValue.longValue() > 0) {
+			return Constants.SUCCESS;
+		} else {
+			return fieldName + " cannot be null";
+		}
+	}
+	
+	// ========================================================================
+	
 	public String validateBasicStepDetails(BasicSetupRequest details) {
 		if(details != null) {
 			String validateFieldResult1 = validateField("noOfEmployees", details.getNoOfEmployees(), true, 10);
@@ -82,6 +94,94 @@ public class ValidationUtil {
 			}
 		} else {
 			return "BasicSetupRequest cannot be null";
+		}
+		return Constants.SUCCESS;
+	}
+	
+	// ========================================================================
+	
+	public String validateAddDepartmentRequest(DepartmentDetails details) {
+		if(details != null) {
+			String validateFieldResult1 = validateField("department", details.getDepartment(), true, 50);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult1)) {
+				return validateFieldResult1;
+			}
+			
+			String validateFieldResult2 = validateField("description", details.getDescription(), false, 255);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult2)) {
+				return validateFieldResult2;
+			}
+		} else {
+			return "DepartmentDetails cannot be null";
+		}
+		return Constants.SUCCESS;
+	}
+	
+	// ========================================================================
+	
+	public String validateUpdateDepartmentRequest(DepartmentDetails details) {
+		if(details != null) {
+			String validateFieldResult1 = validateField("departmentDetailsId", details.getDepartmentDetailsId());
+			
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult1)) {
+				return validateFieldResult1;
+			}
+			
+			String validateFieldResult2 = validateField("department", details.getDepartment(), true, 50);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult2)) {
+				return validateFieldResult2;
+			}
+			
+			String validateFieldResult3 = validateField("description", details.getDescription(), false, 255);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult3)) {
+				return validateFieldResult3;
+			}
+		} else {
+			return "DepartmentDetails cannot be null";
+		}
+		return Constants.SUCCESS;
+	}
+	
+	// ========================================================================
+	
+	public String validateAddDesignationRequest(DesignationDetails details) {
+		if(details != null) {
+			String validateFieldResult1 = validateField("designation", details.getDesignation(), true, 50);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult1)) {
+				return validateFieldResult1;
+			}
+			
+			String validateFieldResult2 = validateField("description", details.getDescription(), false, 255);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult2)) {
+				return validateFieldResult2;
+			}
+		} else {
+			return "DepartmentDetails cannot be null";
+		}
+		return Constants.SUCCESS;
+	}
+	
+	// ========================================================================
+	
+	public String validateUpdateDesignationRequest(DesignationDetails details) {
+		if(details != null) {
+			String validateFieldResult1 = validateField("designationDetailsId", details.getDesignationDetailsId());
+			
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult1)) {
+				return validateFieldResult1;
+			}
+			
+			String validateFieldResult2 = validateField("designation", details.getDesignation(), true, 50);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult2)) {
+				return validateFieldResult2;
+			}
+			
+			String validateFieldResult3 = validateField("description", details.getDescription(), false, 255);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult3)) {
+				return validateFieldResult3;
+			}
+		} else {
+			return "DepartmentDetails cannot be null";
 		}
 		return Constants.SUCCESS;
 	}

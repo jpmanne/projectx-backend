@@ -83,11 +83,11 @@ public class PasswordEncy {
 	}
 
 	
-	/*
-	 * public static void main(String args[]) {
-	 * System.out.println(PasswordEncy.getInstance().encrypt("Welcome_1"));
-	 * System.out.println(PasswordEncy.getInstance().decrypt(
-	 * "qsYQGR6dA9wnsfeVqbZh5Q==")); }
-	 */
+	
+	 /*public static void main(String args[]) {
+	  System.out.println(PasswordEncy.getInstance().encrypt("Welcome_1"));
+	  System.out.println(PasswordEncy.getInstance().decrypt(
+	  "dKWToQncaZm4VvAZEIRhIA==")); }*/
+	 
 	 
 }

@@ -17,14 +17,14 @@ import com.at.projx.email.EmailUtil;
 import com.at.projx.model.AuthorizationDetails;
 import com.at.projx.repository.ExceptionRepository;
 
-public class JBoradException extends Exception {
+public class ProjectXException extends Exception {
 	private static final long serialVersionUID = 2056817234546797042L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(JBoradException.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectXException.class);
 	
 
 	//=========================================================================
 	
-	public JBoradException(ExceptionRepository exceptionRepository, String activity, String message, Throwable cause, AuthorizationDetails authorizationDetails) {
+	public ProjectXException(ExceptionRepository exceptionRepository, String activity, String message, Throwable cause, AuthorizationDetails authorizationDetails) {
 		super();
 		processException(exceptionRepository, activity, message, cause, authorizationDetails); 
 	} 
