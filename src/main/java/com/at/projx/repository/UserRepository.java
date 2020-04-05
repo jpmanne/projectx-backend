@@ -20,6 +20,9 @@ public interface UserRepository extends JpaRepository<UserDetails, Long> {
 	@Query("SELECT a FROM UserDetails a WHERE a.email = :email AND a.password = :password")
 	List<UserDetails> getUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 	
+	@Query("SELECT a FROM UserDetails a WHERE a.organizationDetails.organizationDetailsId = :organizationDetailsId and a.status = :status and a.userDetailsId != :userDetailsId")
+	List<UserDetails> getUsers(@Param("organizationDetailsId") Long organizationDetailsId, @Param("status") String status, @Param("userDetailsId") Long userDetailsId);
+	
 	//List<UserDetails> getUsersByDateOfBirth(Date dateOfBirth);
 	
 	@Query("SELECT a FROM UserDetails a WHERE a.status = :status")

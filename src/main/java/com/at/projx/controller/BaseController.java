@@ -76,8 +76,31 @@ public abstract class BaseController {
 	//=========================================================================
 	
 	public ResponseEntity<Response> getInvalidDataResponseEntity(String validationResult) {
-		Response response = new Response(validationResult, null);
-		return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Response>(new Response(validationResult, null), HttpStatus.BAD_REQUEST);
+	}
+	
+	//=========================================================================
+	
+	public ResponseEntity<Response> getInvalidAuthCodeResponseEntity(String authCode) {
+		return new ResponseEntity<Response>(new Response("Invalid AuthCode ["+authCode+"]", null), HttpStatus.OK);
+	}
+	
+	//=========================================================================
+	
+	public ResponseEntity<Response> getUnauthorizedAccessResponseEntity() {
+		return new ResponseEntity<Response>(new Response("Unauthorized Access", null), HttpStatus.UNAUTHORIZED);
+	}
+	
+	//=========================================================================
+	
+	public ResponseEntity<Response> getOKResponseEntity(String message) {
+		return new ResponseEntity<Response>(new Response(message, null), HttpStatus.OK);
+	}
+	
+	//=========================================================================
+	
+	public ResponseEntity<Response> getInvalidInputResponseEntity(String message) {
+		return new ResponseEntity<Response>(new Response(message, null), HttpStatus.OK);
 	}
 	
 	//=========================================================================
@@ -89,24 +112,28 @@ public abstract class BaseController {
 	
 	//=========================================================================
 	
+	//TODO: Need to remove this
 	public Response getInvalidAuthCodeRespose(String authCode) {
 		return new Response("Invalid AuthCode ["+authCode+"]", null);
 	}
 	
 	//=========================================================================
 	
+	//TODO: Need to remove this
 	public Response getUnAuthorizedAccessRespose() {
 		return new Response("Unauthorized Access", null);
 	}
 	
 	//=========================================================================
 	
+	//TODO: Need to remove this
 	public Response getInvalidInputRespose() {
 		return new Response("Invalid Input", null);
 	}
 	
 	//=========================================================================
 	
+	//TODO: Need to remove this
 	public Response getRespose(String message) {
 		return new Response(message, null);
 	}

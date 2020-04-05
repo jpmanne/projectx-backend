@@ -37,6 +37,7 @@ import com.at.projx.util.ValidationUtil;
 @RequestMapping(URLConstants.Designation.API_BASE)
 public class DesignationController extends BaseController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DesignationController.class);
+	private static final String DESIGNATION_ALREADY_EXISTS = "Designation already exists.";
 
 	@Autowired
 	DesignationRepository designationRepository;
@@ -54,22 +55,19 @@ public class DesignationController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					existingDesignations = designationRepository.findByDesignation(designation, getOrganizationDetailsId(authorizationDetails.getUserDetailsId()));
-					
-					if(existingDesignations != null && existingDesignations.size() > 0) {
-						response = new Response("Designation already exists.", null);
-					} else {
-						response = new Response("Designation available.", null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			
+			existingDesignations = designationRepository.findByDesignation(designation, getOrganizationDetailsId(authorizationDetails.getUserDetailsId()));
+			
+			if(existingDesignations != null && !existingDesignations.isEmpty()) {
+				response = new Response(DESIGNATION_ALREADY_EXISTS, null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Designation available.", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while isDesignationExists";
@@ -91,26 +89,21 @@ public class DesignationController extends BaseController {
 		
 		try {
 			authorizationDetails = validateAuthorization(authCode);
-			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					designations = designationRepository.getDesignations(getOrganizationDetailsId(authorizationDetails.getUserDetailsId()), status);
-					if(designations != null && !designations.isEmpty()) {
-						List<WebDesignationDetails> webDesignations = new ArrayList<>();
-						for(DesignationDetails dd : designations) {
-							webDesignations.add(dd.getWebDesignationDetails());
-						}
-						response = new Response("designations", webDesignations);
-					} else {
-						response = new Response("designations not found", null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			designations = designationRepository.getDesignations(getOrganizationDetailsId(authorizationDetails.getUserDetailsId()), status);
+			if(designations != null && !designations.isEmpty()) {
+				List<WebDesignationDetails> webDesignations = new ArrayList<>();
+				for(DesignationDetails dd : designations) {
+					webDesignations.add(dd.getWebDesignationDetails());
 				}
+				response = new Response("designations", webDesignations);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("designations not found", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while retrieving all the designations";
@@ -133,36 +126,30 @@ public class DesignationController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					String validationResult = ValidationUtil.getInstance().validateAddDesignationRequest(designationDetails);
-					
-					if(Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
-						OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
-						designations = designationRepository.findByDesignation(designationDetails.getDesignation(), organizationDetails.getOrganizationDetailsId());
-						
-						if(designations != null && !designations.isEmpty()) {
-							response = new Response("Designation already exists.", null);
-						} else {
-							designationDetails.setOrganizationDetails(organizationDetails);
-							designationDetails.setStatus(Constants.ACTIVE);
-							DesignationDetails dd = designationRepository.save(designationDetails);
-							if(dd.getDesignationDetailsId() != null) {
-								response = new Response("Designation added successfully", dd.getWebDesignationDetails());
-							} else {
-								response = new Response("Designation adding failure", null);
-							}
-						}
-					} else {
-						response = getRespose(validationResult); 
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			String validationResult = ValidationUtil.getInstance().validateAddDesignationRequest(designationDetails);
+			
+			if(!Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
+				return getInvalidInputResponseEntity(validationResult);
+			} 
+			OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
+			designations = designationRepository.findByDesignation(designationDetails.getDesignation(), organizationDetails.getOrganizationDetailsId());
+			
+			if(designations != null && !designations.isEmpty()) {
+				return getInvalidInputResponseEntity(DESIGNATION_ALREADY_EXISTS);
+			} 
+			designationDetails.setOrganizationDetails(organizationDetails);
+			designationDetails.setStatus(Constants.ACTIVE);
+			DesignationDetails dd = designationRepository.save(designationDetails);
+			if(dd.getDesignationDetailsId() != null) {
+				response = new Response("Designation added successfully", dd.getWebDesignationDetails());
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Designation adding failure", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while adding the Designation ";
@@ -183,24 +170,19 @@ public class DesignationController extends BaseController {
 		
 		try {
 			authorizationDetails = validateAuthorization(authCode);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
-					
-					if(designationDetails.isPresent()) {
-						DesignationDetails existingUserDetails = designationDetails.get();
-					    response = new Response("Designation Details", existingUserDetails.getWebDesignationDetails());
-					} else {
-						response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(designationDetails.isPresent()) {
+				DesignationDetails existingUserDetails = designationDetails.get();
+			    response = new Response("Designation Details", existingUserDetails.getWebDesignationDetails());
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while retrieving the designation, "+designationDetailsId;
@@ -222,26 +204,22 @@ public class DesignationController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
-					if(designationDetails.isPresent()) {
-						DesignationDetails existingUserDetails = designationDetails.get();
-						existingUserDetails.setStatus(Constants.INACTIVE);
-						designationRepository.save(existingUserDetails);
-					    response = new Response("Deactivate designation successful", null);
-					} else {
-						response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
-					}
-					
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
-			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
 			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
+			if(designationDetails.isPresent()) {
+				DesignationDetails existingUserDetails = designationDetails.get();
+				existingUserDetails.setStatus(Constants.INACTIVE);
+				designationRepository.save(existingUserDetails);
+			    response = new Response("Deactivate designation successful", null);
+			} else {
+				response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
+			}
+			
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while deactivting the designation "+designationDetailsId;
 			handleException(LOGGER, logTag, exceptionMessage, e, authorizationDetails);
@@ -262,25 +240,21 @@ public class DesignationController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
-					if(designationDetails.isPresent()) {
-						DesignationDetails existingUserDetails = designationDetails.get();
-						existingUserDetails.setStatus(Constants.ACTIVE);
-						designationRepository.save(existingUserDetails);
-					    response = new Response("Activate designation successful", null);
-					} else {
-						response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
-					}
-					
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DesignationDetails> designationDetails = designationRepository.findById(designationDetailsId);
+			
+			if(designationDetails.isPresent()) {
+				DesignationDetails existingUserDetails = designationDetails.get();
+				existingUserDetails.setStatus(Constants.ACTIVE);
+				designationRepository.save(existingUserDetails);
+			    response = new Response("Activate designation successful", null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while activting the designation "+designationDetailsId;
@@ -304,49 +278,43 @@ public class DesignationController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					String validationResult = ValidationUtil.getInstance().validateUpdateDesignationRequest(designationDetails);
-					
-					if(Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
-						designationDetailsId = designationDetails.getDesignationDetailsId();
-						OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
-						
-						List<DesignationDetails> designations = designationRepository.findByDesignation(designationDetails.getDesignation(), organizationDetails.getOrganizationDetailsId());
-						if(designations != null && !designations.isEmpty()) {
-							for(DesignationDetails details : designations) {
-								if(details.getDesignationDetailsId().compareTo(designationDetailsId) != 0 && details.getDesignation().equalsIgnoreCase(designationDetails.getDesignation())) {
-									isDesignationExists = true;
-									break;
-								}
-							}
-						} 
-						
-						if(isDesignationExists) {
-							response = new Response("Designation already exists.", null);
-						} else {
-							Optional<DesignationDetails> designation = designationRepository.findById(designationDetailsId);
-							
-							if(designation.isPresent()) {
-								DesignationDetails existingDesignation = designation.get();
-								existingDesignation.setDesignation(designationDetails.getDesignation());
-								existingDesignation.setDescription(designationDetails.getDescription());
-								DesignationDetails updatedDesignationDetails = designationRepository.save(existingDesignation);
-								response = new Response("Update designation successful", updatedDesignationDetails.getWebDesignationDetails());
-							} else {
-								new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
-							}
-						}
-					} else {
-						response = getRespose(validationResult);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			String validationResult = ValidationUtil.getInstance().validateUpdateDesignationRequest(designationDetails);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
+				return getInvalidInputResponseEntity(validationResult);
+			}
+			designationDetailsId = designationDetails.getDesignationDetailsId();
+			OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
+			
+			List<DesignationDetails> designations = designationRepository.findByDesignation(designationDetails.getDesignation(), organizationDetails.getOrganizationDetailsId());
+			if(designations != null && !designations.isEmpty()) {
+				for(DesignationDetails details : designations) {
+					if(details.getDesignationDetailsId().compareTo(designationDetailsId) != 0 && details.getDesignation().equalsIgnoreCase(designationDetails.getDesignation())) {
+						isDesignationExists = true;
+						break;
 					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
 				}
+			} 
+			
+			if(isDesignationExists) {
+				response = new Response(DESIGNATION_ALREADY_EXISTS, null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				Optional<DesignationDetails> designation = designationRepository.findById(designationDetailsId);
+				
+				if(designation.isPresent()) {
+					DesignationDetails existingDesignation = designation.get();
+					existingDesignation.setDesignation(designationDetails.getDesignation());
+					existingDesignation.setDescription(designationDetails.getDescription());
+					DesignationDetails updatedDesignationDetails = designationRepository.save(existingDesignation);
+					response = new Response("Update designation successful", updatedDesignationDetails.getWebDesignationDetails());
+				} else {
+					new Response("Designation not found with the designationDetailsId :"+designationDetailsId, null);
+				}
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while updating the Designation, "+designationDetailsId;

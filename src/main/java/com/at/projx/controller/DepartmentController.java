@@ -37,7 +37,7 @@ import com.at.projx.util.ValidationUtil;
 @RequestMapping(URLConstants.Department.API_BASE)
 public class DepartmentController extends BaseController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentController.class);
-
+	private static final String DEPARTMENT_ALREADY_EXISTS = "Department already exists.";
 	@Autowired
 	DepartmentRepository departmentRepository;
 
@@ -54,22 +54,19 @@ public class DepartmentController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					existingDepartments = departmentRepository.findByDepartment(department, getOrganizationDetailsId(authorizationDetails.getUserDetailsId()));
-					
-					if(existingDepartments != null && existingDepartments.size() > 0) {
-						response = new Response("Department already exists.", null);
-					} else {
-						response = new Response("Department available.", null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			
+			existingDepartments = departmentRepository.findByDepartment(department, getOrganizationDetailsId(authorizationDetails.getUserDetailsId()));
+			
+			if(existingDepartments != null && !existingDepartments.isEmpty()) {
+				response = new Response(DEPARTMENT_ALREADY_EXISTS, null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Department available.", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while isDepartmentExists";
@@ -91,26 +88,21 @@ public class DepartmentController extends BaseController {
 		
 		try {
 			authorizationDetails = validateAuthorization(authCode);
-			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					departments = departmentRepository.getDepartments(getOrganizationDetailsId(authorizationDetails.getUserDetailsId()), status);
-					if(departments != null && !departments.isEmpty()) {
-						List<WebDepartmentDetails> webDepartments = new ArrayList<>();
-						for(DepartmentDetails dd : departments) {
-							webDepartments.add(dd.getWebDepartmentDetails());
-						}
-						response = new Response("departments", webDepartments);
-					} else {
-						response = new Response("departments not found", null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			departments = departmentRepository.getDepartments(getOrganizationDetailsId(authorizationDetails.getUserDetailsId()), status);
+			if(departments != null && !departments.isEmpty()) {
+				List<WebDepartmentDetails> webDepartments = new ArrayList<>();
+				for(DepartmentDetails dd : departments) {
+					webDepartments.add(dd.getWebDepartmentDetails());
 				}
+				response = new Response("departments", webDepartments);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("departments not found", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while retrieving all the departments";
@@ -133,36 +125,30 @@ public class DepartmentController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					String validationResult = ValidationUtil.getInstance().validateAddDepartmentRequest(departmentDetails);
-					
-					if(Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
-						OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
-						departments = departmentRepository.findByDepartment(departmentDetails.getDepartment(), organizationDetails.getOrganizationDetailsId());
-						
-						if(departments != null && !departments.isEmpty()) {
-							response = new Response("Department already exists.", null);
-						} else {
-							departmentDetails.setOrganizationDetails(organizationDetails);
-							departmentDetails.setStatus(Constants.ACTIVE);
-							DepartmentDetails dd = departmentRepository.save(departmentDetails);
-							if(dd.getDepartmentDetailsId() != null) {
-								response = new Response("Department added successfully", dd.getWebDepartmentDetails());
-							} else {
-								response = new Response("Department adding failure", null);
-							}
-						}
-					} else {
-						response = getRespose(validationResult); 
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			String validationResult = ValidationUtil.getInstance().validateAddDepartmentRequest(departmentDetails);
+			
+			if(!Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
+				return getInvalidInputResponseEntity(validationResult);
+			} 
+			OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
+			departments = departmentRepository.findByDepartment(departmentDetails.getDepartment(), organizationDetails.getOrganizationDetailsId());
+			
+			if(departments != null && !departments.isEmpty()) {
+				return getInvalidInputResponseEntity(DEPARTMENT_ALREADY_EXISTS);
+			} 
+			departmentDetails.setOrganizationDetails(organizationDetails);
+			departmentDetails.setStatus(Constants.ACTIVE);
+			DepartmentDetails dd = departmentRepository.save(departmentDetails);
+			if(dd.getDepartmentDetailsId() != null) {
+				response = new Response("Department added successfully", dd.getWebDepartmentDetails());
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Department adding failure", null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while adding the Department ";
@@ -183,24 +169,19 @@ public class DepartmentController extends BaseController {
 		
 		try {
 			authorizationDetails = validateAuthorization(authCode);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
-					
-					if(departmentDetails.isPresent()) {
-						DepartmentDetails existingUserDetails = departmentDetails.get();
-					    response = new Response("Department Details", existingUserDetails.getWebDepartmentDetails());
-					} else {
-						response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
-					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(departmentDetails.isPresent()) {
+				DepartmentDetails existingUserDetails = departmentDetails.get();
+			    response = new Response("Department Details", existingUserDetails.getWebDepartmentDetails());
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while retrieving the department, "+departmentDetailsId;
@@ -222,26 +203,22 @@ public class DepartmentController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
-					if(departmentDetails.isPresent()) {
-						DepartmentDetails existingUserDetails = departmentDetails.get();
-						existingUserDetails.setStatus(Constants.INACTIVE);
-						departmentRepository.save(existingUserDetails);
-					    response = new Response("Deactivate department successful", null);
-					} else {
-						response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
-					}
-					
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
-			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
 			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
+			if(departmentDetails.isPresent()) {
+				DepartmentDetails existingUserDetails = departmentDetails.get();
+				existingUserDetails.setStatus(Constants.INACTIVE);
+				departmentRepository.save(existingUserDetails);
+			    response = new Response("Deactivate department successful", null);
+			} else {
+				response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
+			}
+			
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while deactivting the department "+departmentDetailsId;
 			handleException(LOGGER, logTag, exceptionMessage, e, authorizationDetails);
@@ -262,25 +239,21 @@ public class DepartmentController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
-					if(departmentDetails.isPresent()) {
-						DepartmentDetails existingUserDetails = departmentDetails.get();
-						existingUserDetails.setStatus(Constants.ACTIVE);
-						departmentRepository.save(existingUserDetails);
-					    response = new Response("Activate department successful", null);
-					} else {
-						response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
-					}
-					
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
-				}
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			Optional<DepartmentDetails> departmentDetails = departmentRepository.findById(departmentDetailsId);
+			
+			if(departmentDetails.isPresent()) {
+				DepartmentDetails existingUserDetails = departmentDetails.get();
+				existingUserDetails.setStatus(Constants.ACTIVE);
+				departmentRepository.save(existingUserDetails);
+			    response = new Response("Activate department successful", null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				response = new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while activting the department "+departmentDetailsId;
@@ -304,49 +277,43 @@ public class DepartmentController extends BaseController {
 		try {
 			authorizationDetails = validateAuthorization(authCode);
 			
-			if(authorizationDetails.isValidAuthCode()) {
-				if(authorizationDetails.isValidAccess()) {
-					String validationResult = ValidationUtil.getInstance().validateUpdateDepartmentRequest(departmentDetails);
-					
-					if(Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
-						departmentDetailsId = departmentDetails.getDepartmentDetailsId();
-						OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
-						
-						List<DepartmentDetails> departments = departmentRepository.findByDepartment(departmentDetails.getDepartment(), organizationDetails.getOrganizationDetailsId());
-						if(departments != null && !departments.isEmpty()) {
-							for(DepartmentDetails details : departments) {
-								if(details.getDepartmentDetailsId().compareTo(departmentDetailsId) != 0 && details.getDepartment().equalsIgnoreCase(departmentDetails.getDepartment())) {
-									isDepartmentExists = true;
-									break;
-								}
-							}
-						} 
-						
-						if(isDepartmentExists) {
-							response = new Response("Department already exists.", null);
-						} else {
-							Optional<DepartmentDetails> department = departmentRepository.findById(departmentDetailsId);
-							
-							if(department.isPresent()) {
-								DepartmentDetails existingDepartment = department.get();
-								existingDepartment.setDepartment(departmentDetails.getDepartment());
-								existingDepartment.setDescription(departmentDetails.getDescription());
-								DepartmentDetails updatedDepartmentDetails = departmentRepository.save(existingDepartment);
-								response = new Response("Update department successful", updatedDepartmentDetails.getWebDepartmentDetails());
-							} else {
-								new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
-							}
-						}
-					} else {
-						response = getRespose(validationResult);
+			if(!authorizationDetails.isValidAuthCode()) {
+				return getInvalidAuthCodeResponseEntity(authCode);
+			}
+			if(!authorizationDetails.isValidAccess()) {
+				return getUnauthorizedAccessResponseEntity();
+			}
+			String validationResult = ValidationUtil.getInstance().validateUpdateDepartmentRequest(departmentDetails);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validationResult)) {
+				return getInvalidInputResponseEntity(validationResult);
+			}
+			departmentDetailsId = departmentDetails.getDepartmentDetailsId();
+			OrganizationDetails organizationDetails = getOrganizationDetails(authorizationDetails.getUserDetailsId());
+			
+			List<DepartmentDetails> departments = departmentRepository.findByDepartment(departmentDetails.getDepartment(), organizationDetails.getOrganizationDetailsId());
+			if(departments != null && !departments.isEmpty()) {
+				for(DepartmentDetails details : departments) {
+					if(details.getDepartmentDetailsId().compareTo(departmentDetailsId) != 0 && details.getDepartment().equalsIgnoreCase(departmentDetails.getDepartment())) {
+						isDepartmentExists = true;
+						break;
 					}
-				} else {
-					LOGGER.info(logTag + "Unauthorized Access : "+authCode);
-					return new ResponseEntity<Response>(getUnAuthorizedAccessRespose(), HttpStatus.UNAUTHORIZED);
 				}
+			} 
+			
+			if(isDepartmentExists) {
+				response = new Response(DEPARTMENT_ALREADY_EXISTS, null);
 			} else {
-				response = getInvalidAuthCodeRespose(authCode);
-				LOGGER.info(logTag + "Invalid AuthCode : "+authCode);
+				Optional<DepartmentDetails> department = departmentRepository.findById(departmentDetailsId);
+				
+				if(department.isPresent()) {
+					DepartmentDetails existingDepartment = department.get();
+					existingDepartment.setDepartment(departmentDetails.getDepartment());
+					existingDepartment.setDescription(departmentDetails.getDescription());
+					DepartmentDetails updatedDepartmentDetails = departmentRepository.save(existingDepartment);
+					response = new Response("Update department successful", updatedDepartmentDetails.getWebDepartmentDetails());
+				} else {
+					new Response("Department not found with the departmentDetailsId :"+departmentDetailsId, null);
+				}
 			}
 		} catch (Exception e) {
 			String exceptionMessage = logTag + "Exception while updating the Department, "+departmentDetailsId;

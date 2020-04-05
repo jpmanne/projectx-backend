@@ -9,6 +9,7 @@ import com.at.projx.common.Constants;
 import com.at.projx.dao.model.DepartmentDetails;
 import com.at.projx.dao.model.DesignationDetails;
 import com.at.projx.request.model.BasicSetupRequest;
+import com.at.projx.request.model.UserDetailsRequest;
 
 public class ValidationUtil {
 	
@@ -182,6 +183,40 @@ public class ValidationUtil {
 			}
 		} else {
 			return "DepartmentDetails cannot be null";
+		}
+		return Constants.SUCCESS;
+	}
+	
+	// ========================================================================
+	
+	public String validateAddUserRequest(UserDetailsRequest details) {
+		if(details != null) {
+			String validateFieldResult1 = validateField("roleId", details.getRoleId());
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult1)) {
+				return validateFieldResult1;
+			}
+			
+			String validateFieldResult2 = validateField("email", details.getEmail(), true, 150);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult2)) {
+				return validateFieldResult2;
+			}
+			
+			String validateFieldResult3 = validateField("firstName", details.getFirstName(), true, 150);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult3)) {
+				return validateFieldResult3;
+			}
+			
+			String validateFieldResult4 = validateField("lastName", details.getLastName(), true, 150);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult4)) {
+				return validateFieldResult4;
+			}
+			
+			String validateFieldResult5 = validateField("phoneNumber", details.getPhoneNumber(), false, 15);
+			if(!Constants.SUCCESS.equalsIgnoreCase(validateFieldResult5)) {
+				return validateFieldResult5;
+			}
+		} else {
+			return "User Details cannot be null";
 		}
 		return Constants.SUCCESS;
 	}

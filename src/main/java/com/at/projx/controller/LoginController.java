@@ -12,7 +12,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +24,6 @@ import com.at.projx.common.URLConstants;
 import com.at.projx.dao.model.AuthCodeDetails;
 import com.at.projx.dao.model.UserDetails;
 import com.at.projx.model.Response;
-import com.at.projx.repository.AuthCodeRepository;
-import com.at.projx.repository.UserRepository;
 import com.at.projx.request.model.LoginRequest;
 import com.at.projx.request.model.LogoutRequest;
 import com.at.projx.response.model.LoginResponse;
@@ -38,12 +35,6 @@ import com.at.projx.util.PasswordEncy;
 public class LoginController extends BaseController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
-	@Autowired
-	AuthCodeRepository authCodeRepository;
-	
-	@Autowired
-	UserRepository userRepository;
-	
 	//=========================================================================
 	
 	@PostMapping(URLConstants.Login.LOGIN_USER)
