@@ -46,6 +46,8 @@ public class URLConstants {
 		public static final String ACTIVATE_DEPARTMENT = "/activate/{departmentDetailsId}";
 	}
 	
+	//=========================================================================
+	
 	public class Designation {
 		public static final String API_BASE = "/api/designation";
 		public static final String GET_ALL_DESIGNATIONS = "/all";
@@ -59,4 +61,26 @@ public class URLConstants {
 	
 	//=========================================================================
 	
+	public class Employment {
+		public static final String API_BASE = "/api/employment";
+		public static final String SAVE_EMPLOYMENT = "/save";
+		public static final String GET_EMPLOYMENT = "/{employmentDetailsId}";
+		public static final String UPDATE_EMPLOYMENT = "/update";
+	}
+	
+	//=========================================================================
+	
+	public class Profile {
+		public static final String API_BASE = "/api/profile";
+		public static final String GET_PROFILE = "/{userDetailsId}";
+		public static final String SAVE_PROFILE = "/save";
+		public static final String GET_EDUCATIONS = "/educations/{userDetailsId}";
+		public static final String DELETE_EDUCATION = "/education/delete/{educationDetailsId}";
+		public static final String SAVE_EDUCATIONS = "/educations/save";
+		public static final String GET_EXPERIENCES = "/experiences/{userDetailsId}";
+		public static final String DELETE_EXPERIENCE = "/experience/delete/{experienceDetailsId}";
+		public static final String SAVE_EXPERIENCES = "/experiences/save";
+	}
+	
+	//=========================================================================
 }

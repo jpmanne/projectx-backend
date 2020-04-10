@@ -12,7 +12,6 @@ public class LoginResponse implements Serializable {
 	private Long userDetailsId;
 	private String fistName;
 	private String lastName;
-	private String middleName;
 	private Long roleId;
 	private String authCode;
 	public Long getUserDetailsId() {
@@ -32,12 +31,6 @@ public class LoginResponse implements Serializable {
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-	public String getMiddleName() {
-		return middleName;
-	}
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
 	}
 	public Long getRoleId() {
 		return roleId;

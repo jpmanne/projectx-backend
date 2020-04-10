@@ -105,6 +105,12 @@ public abstract class BaseController {
 	
 	//=========================================================================
 	
+	public ResponseEntity<Response> getOKResponseEntity(Response response) {
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	//=========================================================================
+	
 	public void handleException(Logger LOGGER,  String logTag, String exceptionMessage, Throwable e, AuthorizationDetails authorizationDetails) throws ProjectXException {
 		LOGGER.error(logTag + exceptionMessage, e);  
 		throw new ProjectXException(exceptionRepository, logTag, exceptionMessage, e, authorizationDetails);

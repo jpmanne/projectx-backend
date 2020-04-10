@@ -1,7 +1,5 @@
 /**
 * @author  Jaya Prakash Manne
-* @version 1.0
-* @since   01-Nov-2019 
 */
 package com.at.projx.dao.model;
 
@@ -155,6 +153,7 @@ public class UserDetails {
 		webUser.setEmail(email);
 		webUser.setStatus(status);
 		webUser.setRoleId(roleDetails.getRoleId());
+		webUser.setOrganizationDetailsId(organizationDetails.getOrganizationDetailsId());
 		return webUser;
 	}
 }

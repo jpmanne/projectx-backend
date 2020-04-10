@@ -78,7 +78,7 @@ public class LoginController extends BaseController {
 			e.printStackTrace();
 		}
 		LOGGER.info(logTag + "END of the method");
-		return new ResponseEntity<Response>(new Response(message, loginResponse), HttpStatus.OK);
+		return getOKResponseEntity(new Response(message, loginResponse));
 	}
 	
 	//=========================================================================
@@ -105,7 +105,7 @@ public class LoginController extends BaseController {
 			message = "Invalid AuthCode";
 		}
 		LOGGER.info(logTag + "END of the method");
-		return new ResponseEntity<Response>(new Response(message, null), HttpStatus.OK);
+		return getOKResponseEntity(new Response(message, null));
 	}
 	
 	//=========================================================================
